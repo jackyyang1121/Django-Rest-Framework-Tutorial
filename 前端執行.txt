@@ -1,0 +1,2 @@
+cd js_client
+python -m http.server 8111
