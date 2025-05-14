@@ -1,8 +1,8 @@
-algoliasearch-django>=2.0,<3.0
+algoliasearch-django>=2.0,<3.0   #搜尋功能
 django>=4.2.0,<5.0
 djangorestframework
-djangorestframework-simplejwt
-pyyaml
+djangorestframework-simplejwt  #JWT認證，確保操作功能的人是登入的使用者具有token
+pyyaml   
 requests
-django-cors-headers
+django-cors-headers   #前後端跨域請求
 cgi-tools #因為3.12版的python3.12不支援cgi模組所以需要額外安裝cgi-tools
