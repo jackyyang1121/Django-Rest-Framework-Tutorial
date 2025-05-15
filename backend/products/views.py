@@ -38,6 +38,13 @@ class ProductListCreateAPIView(
     是 Django 自動為每個模型提供的（除非我自訂了管理器）。
     all() 是 objects 管理器的一個方法，用來返回資料庫中所有的 Product 記錄（一個 QuerySet，一個Django的型別）。
     """
+
+
+
+################################讀到這裡############################################
+
+
+
     serializer_class = ProductSerializer
 
     def perform_create(self, serializer):
