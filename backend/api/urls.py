@@ -31,3 +31,23 @@ urlpatterns = [
 想像 Django 是一個工廠，工廠只認識「工人」（函數視圖），但 TokenObtainPairView 是一個「藍圖」（類）。
 工廠看不懂藍圖，得先把藍圖轉成一個工人才能用。as_view() 就是把藍圖轉成工人的工具。
 """
+"""
+為什麼要 refresh token，而不是只用 access 就好？
+答案：
+只用 access token 會導致安全性和用戶體驗的問題，refresh token 解決了這些問題。
+使用兩個 token（access 和 refresh）是為了平衡安全性和用戶體驗。access token 用於認證，refresh token 用於獲取新的 access token。
+細節：
+安全性：如果 access token 有效期很長（例如 1 個月），一旦被竊取，攻擊者可以長期使用，風險很高。讓 access token 短命（例如 5 分鐘）可以降低風險，但這會讓用戶頻繁重新登入，影響體驗。
+用戶體驗：refresh token 有效期長（例如 1 天），可以在 access token 過期時自動獲取新的 access token，無需用戶再次輸入帳號密碼。
+這種設計（短期的 access + 長期的 refresh）在安全性和便利性之間找到平衡。
+"""
+"""
+簡單講就是，讓access token可以一直換(每五分鐘)防止被竊取，而refresh token則是讓他可以自動索取新的token所以用戶不用一直重新登入
+但一到refresh更新的時間(一天)就還是要用戶重新登入索取新的一組
+
+以下是TokenObtainPairView.as_view()拿到的樣子
+{
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+"""

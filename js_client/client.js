@@ -75,25 +75,9 @@ function handleLogin(event) {
     // 後端（TokenObtainPairView）處理請求後，返回一個 HTTP 回應（包含 JSON 格式的 token 數據）。
     // fetch 會把這個回應包裝成一個 Response 物件，然後通過 Promise 傳給 .then(response => ...)，這就是 response 的來源。
     })
-    .then(authData => {   //authData是自定義變數名稱，代表從後端獲取的認證數據
+    .then(authData => {   //authData是自定義變數名稱，代表從後端獲取的認證數據，接住 response.json() 的結果()
         handleAuthData(authData, getProductList); // 處理認證數據並調用回調函數獲取產品列表
     })
-
-
-
-
-
-//我目前研究到 handleAuthData(authData, getProductList);
-
-
-
-
-
-
-
-
-
-
     .catch(err => {
         console.log('err', err); // 捕獲並記錄請求中的錯誤
     });
@@ -150,8 +134,10 @@ function handleAuthData(authData, callback) {  //callback是自定義變數名�
     localStorage.setItem('refresh', authData.refresh); // 將 refresh token 儲存到 localStorage
     if (callback) {
         callback(); // 如果有回調函數，執行它（例如獲取產品列表）
+        // callback() 需要確保 callback 是一個函數才能這樣用，否則會報錯。
     }
 }
+
 
 // 將數據寫入內容容器
 function writeToContainer(data) {
