@@ -132,6 +132,17 @@ function handleSearch(event) {
 function handleAuthData(authData, callback) {  //callback是自定義變數名稱，代表回調函數，對應到 getProductList
     localStorage.setItem('access', authData.access); // 將 access token 儲存到 localStorage
     localStorage.setItem('refresh', authData.refresh); // 將 refresh token 儲存到 localStorage
+    /*
+    localStorage 是瀏覽器內建的儲存機制，允許你在用戶的瀏覽器中儲存簡單的數據（字串格式）。
+    setItem 方法會把數據存下來，即使頁面關閉或重新整理，數據仍然存在（除非主動清除）。
+
+    localStorage.setItem(key, value) 接受兩個參數：
+    第一個參數（key）：鍵名，用來標識你要儲存的數據（必須是字串）。
+    第二個參數（value）：要儲存的值（會自動轉成字串）。
+
+    localStorage 用來儲存 token（像 access 和 refresh），讓用戶可以在瀏覽器中執行認證動作（例如發送 API 請求），而不需要每次都重新登入。
+    localStorage 的數據會一直存在，直到用戶清除瀏覽器數據（例如清除快取）、程式碼主動刪除（localStorage.removeItem），或者瀏覽器被重置（像隱私模式結束）。
+    */
     if (callback) {
         callback(); // 如果有回調函數，執行它（例如獲取產品列表）
         // callback() 需要確保 callback 是一個函數才能這樣用，否則會報錯。
