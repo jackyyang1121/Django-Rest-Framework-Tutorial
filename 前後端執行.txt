@@ -1,0 +1,11 @@
+cd js_client
+python -m http.server 8111
+
+在終端機點連結後會跑不出來，要去網址那邊改成localhost:8111才跑得出來
+
+
+後端:
+cd backend
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
