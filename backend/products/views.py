@@ -77,6 +77,14 @@ class ProductListCreateAPIView(
     C -->|繼承| D[ProductSerializer]
     D -->|實例化| E[serializer 物件]
     """
+    """
+    A[HTTP 請求] -->|進入| B[視圖類]
+    B -->|使用| C[serializer_class]
+    C -->|實例化| D[ProductSerializer]
+    D -->|GET請求| E[序列化:模型→JSON]
+    D -->|POST請求| F[反序列化:JSON→模型]
+    """
+    #serializer_class 定義了模板，而 perform_create 中的 serializer 是使用這個模板創建的實際工具。
 
     def perform_create(self, serializer):
         """
