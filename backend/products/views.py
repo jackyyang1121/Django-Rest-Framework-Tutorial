@@ -96,13 +96,12 @@ class ProductListCreateAPIView(
         將 Python 物件（如 Django 模型）轉換為 JSON 數據（序列化）
         將 JSON 數據轉換為 Python 物件（反序列化）
         """
-        # serializer.save(user=self.request.user)
         title = serializer.validated_data.get('title')   #validated_data 是 serializer 的一個屬性，包含經過驗證的數據
         content = serializer.validated_data.get('content') or None   
         if content is None:
             content = title
         serializer.save(user=self.request.user, content=content)
-        # send a Django signal
+        #save和validated比較像，都是Django序列化器提供的方法，而get是python提供的方法
 
 product_list_create_view = ProductListCreateAPIView.as_view()
 
