@@ -83,6 +83,11 @@ function handleLogin(event) {
     });
 }
 
+
+//////////////////////2讀到這裡/////////////////////////
+
+
+
 // 處理搜尋表單提交
 function handleSearch(event) {
     event.preventDefault(); // 阻止表單的默認提交行為
@@ -154,6 +159,22 @@ function handleAuthData(authData, callback) {  //callback是自定義變數名�
 function writeToContainer(data) {
     if (contentContainer) {
         contentContainer.innerHTML = "<pre>" + JSON.stringify(data, null, 4) + "</pre>"; // 將數據格式化為 JSON 並顯示
+    /*
+    JSON.stringify(data, null, 4)：
+    把 JavaScript 物件（data）轉成好看的 JSON 文字
+    null 是預設的轉換設定
+    4 表示縮排用 4 個空格，讓格式更整齊
+
+    "<pre>" + ... + "</pre>"：
+    用 <pre> 標籤包住 JSON 文字
+    <pre> 標籤會保留所有空格和換行，讓輸出格式不會亂掉
+
+    contentContainer.innerHTML = ...：
+    把處理好的內容放到網頁上的容器裡
+    */
+    
+    
+    
     }
 }
 
@@ -164,14 +185,34 @@ function getFetchOptions(method, body) {
         headers: {
             "Content-Type": "application/json", // 指定請求內容類型為 JSON
             "Authorization": `Bearer ${localStorage.getItem('access')}` // 添加授權頭，使用 access token
+            /*
+            ${} - JavaScript 的模板字面量語法
+            一個可以填空的模板
+            ${} 裡面可以放變數或表達式
+            使用反引號 ` 包圍整個字符串
+            */
+
+            //getItem() 是瀏覽器提供的 localStorage API 的方法
+
+            /*
+            Authorization": HTTP 請求標頭的名稱
+            Bearer: JWT 認證的標準前綴
+            localStorage.getItem('access'): 從瀏覽器儲存中獲取 access token
+            */
         },
         body: body ? body : null // 如果有主體數據，包含進請求中
+        /*
+        條件 ? 值1 : 值2
+        如果條件為真，返回值1；如果為假，返回值2
+        */
     };
 }
 
 // 檢查 token 是否無效
 function isTokenNotValid(jsonData) {
     if (jsonData.code && jsonData.code === "token_not_valid") { // 如果回應顯示 token 無效
+        //jsonData 是從getFetchOptions獲取的json格式的數據
+        //token_not_valid 是 Django REST Framework 的 SimpleJWT 套件預定義的錯誤代碼
         alert("Please login again"); // 提示用戶重新登入
         return false; // 返回 false 表示 token 無效
     }
