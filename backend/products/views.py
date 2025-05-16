@@ -104,6 +104,53 @@ class ProductListCreateAPIView(
         #save和validated比較像，都是Django序列化器提供的方法，而get是python提供的方法
 
 product_list_create_view = ProductListCreateAPIView.as_view()
+"""
+.as_view() 會回傳一個可調用的視圖函數（view function），這個函數會：
+接收 HTTP 請求
+根據請求方法執行相應的操作
+返回 HTTP 響應
+
+GET 請求響應：
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "title": "第一個產品",
+            "content": "產品描述",
+            "price": 99.99
+        },
+        {
+            "id": 2,
+            "title": "第二個產品",
+            "content": "產品描述",
+            "price": 199.99
+        }
+    ]
+}
+
+POST 請求響應：
+{
+    "id": 3,
+    "title": "新建的產品",
+    "content": "新產品描述",
+    "price": 299.99
+}
+
+所以，product_list_create_view 最終是一個功能完整的視圖函數，能夠：
+處理 GET 和 POST 請求
+自動進行權限檢查
+處理數據序列化/反序列化
+返回適當的 JSON 響應
+
+視圖函數就是：
+一個負責處理網頁請求的程式
+像是網站的接待員
+決定要給使用者什麼回應
+確保請求被正確處理
+"""
 
 class ProductDetailAPIView(
     UserQuerySetMixin, 
