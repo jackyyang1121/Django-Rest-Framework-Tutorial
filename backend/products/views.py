@@ -1,12 +1,39 @@
 from rest_framework import generics, mixins
+"""
+generics 模組提供了一組通用視圖類（Generic Views），用於快速構建常見的 API 端點，例如列表、創建、檢索、更新或刪除資源（CRUD 操作）。 
+例如：
+generics.ListAPIView：用於顯示資源列表。
+generics.CreateAPIView：用於創建新資源。
+generics.RetrieveUpdateDestroyAPIView：用於檢索、更新或刪除單個資源。
+
+mixins 模組提供了一組混入類，用於為視圖添加特定功能，例如列表、創建、檢索、更新或刪除操作。這些混入類通常與 generics.GenericAPIView 結合使用。 
+常見的混入類包括：
+mixins.ListModelMixin：處理列表請求。
+mixins.CreateModelMixin：處理創建請求。
+mixins.RetrieveModelMixin：處理單個資源檢索。
+"""
 from rest_framework.decorators import api_view
+"""
+api_view 是一個裝飾器，用於將普通的 Python 函數轉換為 DRF 的 API 視圖。
+它允許你用函數式視圖（Function-Based Views, FBV）定義 API 端點，而不是類式視圖（Class-Based Views, CBV）。 
+它支持指定允許的 HTTP 方法（例如 GET, POST）並自動處理 DRF 的請求解析和響應格式化。
+"""
 from rest_framework.response import Response
+"""
+Response 是一個 DRF 提供的響應類，用於返回格式化的 API 響應（通常是 JSON 格式）。
+它比 Django 的標準 HttpResponse 更適合 API 開發，因為它支持序列化數據、狀態碼和自動內容協商。
+"""
 # from django.http import Http404
 from django.shortcuts import get_object_or_404
+"""
+get_object_or_404 是一個快捷函數，用於從資料庫查詢單個物件。
+如果物件存在，則返回該物件；如果不存在，則自動引發 Http404 異常，Django 會將其渲染為 HTTP 404（Not Found）錯誤頁面或響應。
+"""
 from api.mixins import (
     StaffEditorPermissionMixin,
     UserQuerySetMixin)
-
+#StaffEditorPermissionMixin 和 UserQuerySetMixin 是 Django 專用的工具，通常與 Django 的模型、視圖或 DRF 的 API 架構緊密整合。
+#它們依賴 Django 的認證系統、ORM（物件關聯映射）或 DRF 的視圖類，無法獨立於 Django 環境使用。
 from .models import Product
 from .serializers import ProductSerializer
 
@@ -39,25 +66,35 @@ class ProductListCreateAPIView(
     all() 是 objects 管理器的一個方法，用來返回資料庫中所有的 Product 記錄（一個 QuerySet，一個Django的型別）。
     """
     serializer_class = ProductSerializer
+    """
+    雖然這個類別中沒有呼叫到 serializer_class
+    但其實generics.ListCreateAPIView內部有用到serializer_class
+    所以serializer_class是一個在繼承generics.ListCreateAPIView的類別內一定要出現的東西
+    """
+    """
+    A[rest_framework.serializers 模組] -->|提供| B[Serializer 基礎類]
+    B -->|繼承| C[serializers.ModelSerializer]
+    C -->|繼承| D[ProductSerializer]
+    D -->|實例化| E[serializer 物件]
+    """
 
     def perform_create(self, serializer):
+        """
+        簡單來說就是因為有這行from .serializers import ProductSerializer
+        而這行是在serializers.py匯入的，而serializers.py內有這行from rest_framework import serializers
+        而serializers內有serializer，所以在這邊打上serializer才會有功能而不是自定義變數
+
+        serializer 就像是一個翻譯器，主要負責：
+        將 Python 物件（如 Django 模型）轉換為 JSON 數據（序列化）
+        將 JSON 數據轉換為 Python 物件（反序列化）
+        """
         # serializer.save(user=self.request.user)
-        title = serializer.validated_data.get('title')
-        content = serializer.validated_data.get('content') or None
+        title = serializer.validated_data.get('title')   #validated_data 是 serializer 的一個屬性，包含經過驗證的數據
+        content = serializer.validated_data.get('content') or None   
         if content is None:
             content = title
         serializer.save(user=self.request.user, content=content)
         # send a Django signal
-    
-    # def get_queryset(self, *args, **kwargs):
-    #     qs = super().get_queryset(*args, **kwargs)
-    #     request = self.request
-    #     user = request.user
-    #     if not user.is_authenticated:
-    #         return Product.objects.none()
-    #     # print(request.user)
-    #     return qs.filter(user=request.user)
-
 
 product_list_create_view = ProductListCreateAPIView.as_view()
 
