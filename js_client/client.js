@@ -84,30 +84,24 @@ function handleLogin(event) {
 }
 
 
-
-
-
-
-
-
-/////////////////////////////讀到這裡//////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
 // 處理搜尋表單提交
 function handleSearch(event) {
     event.preventDefault(); // 阻止表單的默認提交行為
     let formData = new FormData(searchForm); // 收集表單數據（搜尋查詢）
     let data = Object.fromEntries(formData); // 將表單數據轉換為對象格式
     let searchParams = new URLSearchParams(data); // 將對象轉換為 URL 查詢參數
+    //URLSearchParams(data) 會把資料轉成 key=value&key2=value2 這種網址查詢參數格式。
+    /*
+    URLSearchParams 是 JavaScript 提供的一個內建物件（Web API），用於處理 URL 的查詢參數（Query String）。
+    它提供了一個簡單且直觀的方式來解析、操作和生成 URL 查詢參數，特別適用於處理表單數據、API 請求或動態 URL 構建。
+    */ 
+
+
+
+/////////////////////////////讀到這裡////////////////////////////////////////////////////////////////
+
+
+
     const endpoint = `${baseEndpoint}/search/?${searchParams}`; // 搜尋 API 端點，包含查詢參數
     const headers = {
         "Content-Type": "application/json", // 指定請求內容類型為 JSON
@@ -126,7 +120,7 @@ function handleSearch(event) {
     })
     .then(data => {
         const validData = isTokenNotValid(data); // 檢查 token 是否有效
-        if (validData && contentContainer) {
+        if (validData && contentContainer) {   //要兩個條件同時成立
             contentContainer.innerHTML = ""; // 清空內容容器
             if (data && data.hits) { // 如果回應包含搜尋結果
                 let htmlStr = "";
@@ -272,7 +266,7 @@ function getProductList() {
 validateJWTToken();
 
 // 配置 Algolia InstantSearch.js
-const searchClient = algoliasearch('4IHLYNCMBJ', '2d98a3c1e68d4f81bbba206ca075cfbb'); // 初始化 Algolia 客戶端，使用應用 ID 和 API 密鑰
+const searchClient = algoliasearch('H63LIZ0EO7', '48da47d859e79e339efc931743ce9d48'); // 初始化 Algolia 客戶端，使用應用 ID 和 API 密鑰
 
 const search = instantsearch({
     indexName: 'cfe_Product', // 指定要搜尋的 Algolia 索引名稱
