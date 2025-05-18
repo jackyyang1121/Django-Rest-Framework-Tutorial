@@ -9,10 +9,11 @@ from rest_framework_simplejwt.views import (
 # 可以把 TokenObtainPairView 看作一個預寫好的功能模組，類似 Pandas 提供數據處理工具
 # 這裡它是專門用來驗證用戶憑證（像用戶名和密碼），然後生成 token。
 
+# 這裡是從backend/api/views.py 導入 api_home 函數視圖
 from . import views
-# from .views import api_home
 
 
+#http://localhost:8000/api/
 urlpatterns = [
     path('auth/', obtain_auth_token),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -25,11 +26,23 @@ urlpatterns = [
     # path('products/', include('products.urls'))
 ]
 
-
+"""
+TokenObtainPairView 來自 rest_framework_simplejwt.views，as_view() 來自 Django 的 View。
+"""
 """
 為什麼要用 as_view() 轉換？
 想像 Django 是一個工廠，工廠只認識「工人」（函數視圖），但 TokenObtainPairView 是一個「藍圖」（類）。
 工廠看不懂藍圖，得先把藍圖轉成一個工人才能用。as_view() 就是把藍圖轉成工人的工具。
+TokenObtainPairView 是個工具，負責驗證用戶 (如帳號密碼) 並生成 token。
+as_view() 把它包裝成 Django 路由能認的函數，這樣用戶訪問某 URL (如 /token/) 就能觸發它，拿到 token。
+"""
+"""
+TokenObtainPairView 返回一對 JWT token (access token 和 refresh token)。
+例子：
+{
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
 """
 """
 為什麼要 refresh token，而不是只用 access 就好？
@@ -44,10 +57,4 @@ urlpatterns = [
 """
 簡單講就是，讓access token可以一直換(每五分鐘)防止被竊取，而refresh token則是讓他可以自動索取新的token所以用戶不用一直重新登入
 但一到refresh更新的時間(一天)就還是要用戶重新登入索取新的一組
-
-以下是TokenObtainPairView.as_view()拿到的樣子
-{
-  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
 """
