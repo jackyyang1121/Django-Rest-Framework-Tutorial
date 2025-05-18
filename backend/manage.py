@@ -6,7 +6,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cfehome.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cfehome.settings')  #這行就是告訴 Django：「我的設定檔在 cfehome/settings.py」
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

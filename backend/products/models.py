@@ -1,21 +1,34 @@
 import random
-from django.conf import settings
-from django.db import models
-from django.db.models import Q
-
+from django.conf import settings   #讓這邊可以訪問settings.py，進而得知用戶模型
+from django.db import models  
+from django.db.models import Q   #可以用來實現複雜的查詢條件
+ 
 User = settings.AUTH_USER_MODEL # auth.User
 
 TAGS_MODEL_VALUES = ['electronics', 'cars', 'boats', 'movies', 'cameras']
 
-class ProductQuerySet(models.QuerySet):  #不是模型所以不用繼承models.Model
+class ProductQuerySet(models.QuerySet):  
+    #不是模型所以不用繼承models.Model
     #繼承了 Django 的 models.QuerySet，用來定義查詢產品的具體邏輯。
+    """
+    繼承 models.QuerySet:
+    功能: 讓自定義 QuerySet (如 ProductQuerySet) 擴展 Django 的查詢功能，提供客製化查詢方法 (如 is_public, search)。
+    來源: Django 內建，來自 django.db.models.QuerySet。
+    保留原功能:繼承 QuerySet 自動獲得 filter, all, exclude 等方法，無需重寫。
+    """
     def is_public(self):
         return self.filter(public=True)
     #is_public(self)：過濾出 public=True 的產品，返回一個新的 QuerySet
+    """
+    .filter()
+    功能: .filter() 是 Django ORM 的查詢方法，用於過濾 QuerySet，返回符合條件的記錄。
+    來源: Django 內建，來自 django.db.models.QuerySet。
+    """
 
     def search(self, query, user=None):  #search(self, query, user=None)：根據 query 搜尋產品標題或內容，並根據用戶（user）進一步過濾。
         lookup = Q(title__icontains=query) | Q(content__icontains=query) #使用 Q 物件實現標題（title__icontains）和內容（content__icontains）的模糊搜尋。
-        """什麼是「模糊搜尋」？
+        """
+        什麼是「模糊搜尋」？
         想像你在找一本書，書名可能包含「phone」，但你不確定是「iPhone」還是「Phone Case」，怎麼找到所有可能的書？這就是模糊搜尋。
 
         答案：
@@ -43,13 +56,28 @@ class ProductQuerySet(models.QuerySet):  #不是模型所以不用繼承models.M
         qs = self.is_public().filter(lookup) #先過濾剩公開產品（is_public()），再根據 lookup 模糊搜尋條件過濾。
         if user is not None:
             qs2 = self.filter(user=user).filter(lookup)  #如果提供了 user，也會查詢該用戶的產品（無論是否公開），然後用 | 合併結果，distinct() 去除重複。
+            #主要就是讓搜尋結果也包含用戶自己的非公開產品
             qs = (qs | qs2).distinct() #去除重複的產品
         return qs
 
 
 class ProductManager(models.Manager):
+    """
+    繼承 models.Manager:
+    功能: 讓自定義 Manager (如 ProductManager) 控制模型的查詢入口，定義如何取得 QuerySet 或新增自定義查詢方法。
+    來源: Django 內建，來自 django.db.models.Manager。
+    """
     def get_queryset(self, *args,**kwargs):
+        #*args: 像個「可裝多個東西的袋子」，接收任意數量的位置引數 (如 func(1, 2, 3))，存成一個 tuple。
+        # **kwargs: 像個「標籤袋子」，接收任意數量的關鍵字引數 (如 func(a=1, b=2))，存成一個 dict。
         return ProductQuerySet(self.model, using=self._db)
+    """
+    功能:
+    self.model: 指向當前 ProductManager 關聯的模型類 (即 Product)。
+    using=self._db: 指定使用的資料庫連線 (settings.DATABASES 的設定)。
+
+    來源: Django 內建，來自 django.db.models.Manager 和 django.db.models.QuerySet。
+    """
 
     def search(self, query, user=None):
         return self.get_queryset().search(query, user=user)  
@@ -68,14 +96,18 @@ class Product(models.Model):  # pk
     """
     user = models.ForeignKey(User, default=1, null=True, on_delete=models.SET_NULL)
     """
-    models.ForeignKey連結到另一個模型（這裡是 User 模型，從 settings.AUTH_USER_MODEL 導入）。表示每個產品屬於一個用戶。
-    User：目標模型，表示 Django 的用戶模型。
+    ForeignKey功能: 定義 Django 模型間的一對多關聯，將一個模型的記錄連接到另一個模型的單一記錄。
+    一對多關係: 一個用戶 (User) 可以擁有多個產品 (Product)，但每個產品只屬於一個用戶。
+    ForeignKey來源: Django 內建，來自 django.db.models.ForeignKey。
+    ForeignKey 定義在 Product 模型，指向 User。資料庫裡，Product 表有個欄位存用戶的 ID，多個產品的這個欄位可以存同一個用戶 ID，但每個產品只有一個用戶 ID。
     default=1：如果沒指定用戶，預設使用 ID 為 1 的用戶（必須確保資料庫中有 ID 為 1 的用戶，否則會報錯）。
     null=True：允許欄位在資料庫中為空（NULL），表示產品可以沒有關聯用戶。
     on_delete=models.SET_NULL：如果關聯的用戶被刪除，產品的 user 欄位會設為 NULL，而不是刪除產品。
 
     User = settings.AUTH_USER_MODEL
-    settings.AUTH_USER_MODEL 是 Django 設定檔中的一個變數，用來指定應用程式使用的用戶模型
+    我的 settings.py 沒定義 AUTH_USER_MODEL，所以 Django 自動用內建的 auth.User 模型作為用戶模型。
+    這個模型包含基本欄位 (如 username、password、email)。
+    我在settings.py透過 django.contrib.auth (在 INSTALLED_APPS 中) 與這個預設模型互動，處理登入、權限等。
     """
     title = models.CharField(max_length=120)
     """
@@ -94,7 +126,7 @@ class Product(models.Model):  # pk
     """
     price = models.DecimalField(max_digits=15, decimal_places=2, default=99.99)
     """
-    price 是一個十進位數字欄位，用來儲存產品價格。
+    price 用來儲存產品價格。
     細節：
     models.DecimalField：用來儲存精確的十進位數，適合價格或金額（避免浮點數誤差）。
     max_digits=15：數字總長度最多 15 位（包括小數點前後）。
@@ -109,8 +141,9 @@ class Product(models.Model):  # pk
     default=True：預設為 True，表示產品預設是公開的。
     """
     objects = ProductManager()   # 設置一個實例，用於查詢產品數據（包含產品及用戶 ID）
-    #Product.objects.search("phone") 可能返回一個 QuerySet，例如 [<Product: id=1>, <Product: id=2>]。
-    #每個 Product 實例有 id（產品 ID）和 user.id（用戶 ID），例如 product.id 和 product.user.id。
+    #ProductManager()內的return self.get_queryset().search(query, user=user)  
+    #可能返回一個 QuerySet，例如 [<Product: id=1>, <Product: id=2>]。
+    #每個 Product 實例有 id（產品 ID）和 user.id（用戶 ID）。
 
 
     def get_absolute_url(self):

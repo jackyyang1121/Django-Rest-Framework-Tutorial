@@ -5,6 +5,7 @@ generics 模組提供了一組通用視圖類（Generic Views），用於快速�
 generics.ListAPIView：用於顯示資源列表。
 generics.CreateAPIView：用於創建新資源。
 generics.RetrieveUpdateDestroyAPIView：用於檢索、更新或刪除單個資源。
+generics.GenericAPIView：提供一個基礎視圖類，可以繼承它來實現自定義的視圖。
 
 mixins 模組提供了一組混入類，用於為視圖添加特定功能，例如列表、創建、檢索、更新或刪除操作。這些混入類通常與 generics.GenericAPIView 結合使用。 
 常見的混入類包括：
@@ -45,15 +46,19 @@ class ProductListCreateAPIView(
     UserQuerySetMixin：
     功能：這是一個自定義的混入類（Mixin），通常用來過濾資料查詢（QuerySet），根據當前用戶的身份限制可見數據。
     作用：它可能會確保普通用戶只能看到自己的產品，而管理員（staff）可以看到所有產品。
-    在你的程式碼中：UserQuerySetMixin 會修改 ProductListCreateAPIView 的 get_queryset 方法，根據用戶身份過濾產品數據。
+    在我的程式碼中：UserQuerySetMixin 會修改 ProductListCreateAPIView 的 get_queryset 方法，根據用戶身份過濾產品數據。
+    UserQuerySetMixin 自動過濾資料，確保用戶只看自己的東西。
 
     StaffEditorPermissionMixin：
     功能：這也是一個自定義混入類，用來檢查權限，確保只有特定用戶（例如管理員或編輯者）可以執行操作。
     作用：它可能會限制「創建」或「列出」產品的操作，只有具備管理員權限（staff）或特定權限的用戶才能訪問。
     在你的程式碼中：StaffEditorPermissionMixin 會為 ProductListCreateAPIView 添加權限檢查，確保非管理員無法操作。
+    StaffEditorPermissionMixin 檢查權限，確保只有授權員工能動手改。
 
     generics.ListCreateAPIView：
     功能：這是 Django REST Framework 提供的一個通用視圖類，用於處理「列出」（List）和「創建」（Create）操作。
+    視圖 (View) 是網頁應用裡負責處理用戶請求的「中間人」。
+    用戶點擊或送資料時，視圖接收請求，決定怎麼處理(例如:列出或創建)，然後回傳結果 (如網頁、JSON)。
     作用：
     List：處理 GET 請求，返回產品列表（通常是 JSON 格式）。
     Create：處理 POST 請求，創建新產品並保存到資料庫。
@@ -62,14 +67,15 @@ class ProductListCreateAPIView(
     queryset = Product.objects.all()
     """
     Product 是一個 Django 模型類，我在models.py自己定義的
-    是 Django 自動為每個模型提供的（除非我自訂了管理器）。
-    all() 是 objects 管理器的一個方法，用來返回資料庫中所有的 Product 記錄（一個 QuerySet，一個Django的型別）。
+    objects 是Product模型內的屬性，裡面包含所有搜尋結果。 
+    .all()來源於Django 內建，來自 django.db.models.QuerySet(因為Product中的objects用到了class ProductQuerySet(models.QuerySet)，繼承了models.QuerySet)。
     """
     serializer_class = ProductSerializer
     """
     雖然這個類別中沒有呼叫到 serializer_class
     但其實generics.ListCreateAPIView內部有用到serializer_class
     所以serializer_class是一個在繼承generics.ListCreateAPIView的類別內一定要出現的東西
+    或者是覆寫 get_serializer_class() 方法返回序列化器但不常見
     """
     """
     A[rest_framework.serializers 模組] -->|提供| B[Serializer 基礎類]
@@ -84,19 +90,31 @@ class ProductListCreateAPIView(
     D -->|GET請求| E[序列化:模型→JSON]
     D -->|POST請求| F[反序列化:JSON→模型]
     """
-    #serializer_class 定義了模板，而 perform_create 中的 serializer 是使用這個模板創建的實際工具。
-
+    #serializer_class 的ProductSerializer裡面的rest_framework.serializers.ModelSerializer定義了模板，而 perform_create 中的 serializer 是使用這個模板創建的實際工具。
     def perform_create(self, serializer):
         """
+        perform_create(self, serializer) 是 Django REST Framework (DRF) 中用來自定義 POST 請求創建物件的邏輯，覆寫 generics.ListCreateAPIView 的預設行為。
+        這段程式碼在創建 Product時因為繼承generics.ListCreateAPIView被觸發，確保新產品的 user 是當前登入用戶，並檢查 content 是否為空，若空則用 title 填補。serializer.save() 儲存最終資料。
+        """
+        """
+        不覆寫 perform_create，DRF 預設只調用 serializer.save()，
+        不會執行我的自定義邏輯 (title = serializer.validated_data.get('title'), content = serializer.validated_data.get('content') or None)
+        導致 title 不會自動填充content， 可能用預設值或失敗。
+        """
+        """
+        serializer不是自定義的變數，而是DRF提供的一個工具的原因:
         簡單來說就是因為有這行from .serializers import ProductSerializer
         而這行是在serializers.py匯入的，而serializers.py內有這行from rest_framework import serializers
         而serializers內有serializer，所以在這邊打上serializer才會有功能而不是自定義變數
+        serializer 的功能來自 DRF 的視圖邏輯 (ListCreateAPIView 等)，它自動根據 serializer_class = ProductSerializer 生成 serializer 實例
 
         serializer 就像是一個翻譯器，主要負責：
         將 Python 物件（如 Django 模型）轉換為 JSON 數據（序列化）
         將 JSON 數據轉換為 Python 物件（反序列化）
         """
         title = serializer.validated_data.get('title')   #validated_data 是 serializer 的一個屬性，包含經過驗證的數據
+        #validated_data功能:驗證資訊
+        #validated_data來源:Django REST Framework，來自 rest_framework.serializers.Serializer。
         content = serializer.validated_data.get('content') or None   
         if content is None:
             content = title
@@ -235,29 +253,3 @@ class ProductMixinView(
 
 product_mixin_view = ProductMixinView.as_view()
 
-@api_view(['GET', 'POST'])
-def product_alt_view(request, pk=None, *args, **kwargs):
-    method = request.method  
-
-    if method == "GET":
-        if pk is not None:
-            # detail view
-            obj = get_object_or_404(Product, pk=pk)
-            data = ProductSerializer(obj, many=False).data
-            return Response(data)
-        # list view
-        queryset = Product.objects.all() 
-        data = ProductSerializer(queryset, many=True).data
-        return Response(data)
-
-    if method == "POST":
-        # create an item
-        serializer = ProductSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            title = serializer.validated_data.get('title')
-            content = serializer.validated_data.get('content') or None
-            if content is None:
-                content = title
-            serializer.save(content=content)
-            return Response(serializer.data)
-        return Response({"invalid": "not good data"}, status=400)
