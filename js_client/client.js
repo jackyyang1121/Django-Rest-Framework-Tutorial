@@ -110,6 +110,15 @@ function handleLogin(event) {
 }
 
 
+
+/////////////////////////讀到這裡，完整走完handleLogin流程了//////////////////////////
+
+
+
+
+
+
+
 // 處理搜尋表單提交
 function handleSearch(event) {
     event.preventDefault(); // 阻止表單的默認提交行為
@@ -179,15 +188,16 @@ function handleAuthData(authData, callback) {  //callback是自定義變數名�
     localStorage 的數據會一直存在，直到用戶清除瀏覽器數據（例如清除快取）、程式碼主動刪除（localStorage.removeItem），或者瀏覽器被重置（像隱私模式結束）。
     */
     if (callback) {
-        callback(); // 如果有回調函數，執行它（例如獲取產品列表）
-        // callback() 需要確保 callback 是一個函數才能這樣用，否則會報錯。
+        callback(); 
+        //這邊的用意是先執行上面的localStorage.setItem先把token儲存到localStorage
+        //這時如果有callback也就是getProductList()，再執行getProductList()去瀏覽器抓token才抓得到
     }
 }
 
 
 // 將數據寫入內容容器
 function writeToContainer(data) {
-    if (contentContainer) {
+    if (contentContainer) {   //contentContainer是網頁上的容器，在index.html的<div id="content-container"></div>，上面有寫
         contentContainer.innerHTML = "<pre>" + JSON.stringify(data, null, 4) + "</pre>"; // 將數據格式化為 JSON 並顯示
     /*
     JSON.stringify(data, null, 4)：
@@ -228,6 +238,7 @@ function getFetchOptions(method, body) {
             Authorization": HTTP 請求標頭的名稱
             Bearer: JWT 認證的標準前綴
             localStorage.getItem('access'): 從瀏覽器儲存中獲取 access token
+            access token在前端登入時handleAuthData()會儲存token在瀏覽器
             */
         },
         body: body ? body : null // 如果有主體數據，包含進請求中
@@ -240,7 +251,7 @@ function getFetchOptions(method, body) {
 
 // 檢查 token 是否無效
 function isTokenNotValid(jsonData) {
-    if (jsonData.code && jsonData.code === "token_not_valid") { // 如果回應顯示 token 無效
+    if (jsonData.code && jsonData.code === "token_not_valid") { // 如果jsonData.code 存在則略過，如果不在則執行
         //jsonData 是從getFetchOptions獲取的json格式的數據
         //token_not_valid 是 Django REST Framework 的 SimpleJWT 套件預定義的錯誤代碼
         alert("Please login again"); // 提示用戶重新登入
@@ -280,9 +291,22 @@ function getProductList() {
         const validData = isTokenNotValid(data); // 檢查 token 是否有效
         if (validData) {
             writeToContainer(data); // 如果 token 有效，將數據寫入內容容器
+            //我在前端網頁上能看到很多產品資訊，就是因為有呼叫 writeToContainer(data) 這個函數。
+            //顯示在網頁的 content-container 區塊裡
         }
     });
 }
+/*
+差異總結
+| 函數               | 主要用途                 | 操作對象           | 影響範圍       |
+|-------------------|-------------------------|--------------------|---------------|
+| handleAuthData    | 存 token、執行 callback | localStorage、token| 認證、API 請求 |
+| writeToContainer  | 顯示資料在網頁上        | contentContainer   | 畫面顯示       |
+
+handleAuthData 是「存資料（token）到 localStorage」+「觸發後續動作」。
+writeToContainer 是「把資料（通常是 API 回傳的 JSON）顯示在網頁上」。
+*/
+
 
 // 頁面加載時驗證 JWT token
 validateJWTToken();

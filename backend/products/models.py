@@ -25,7 +25,7 @@ class ProductQuerySet(models.QuerySet):
     來源: Django 內建，來自 django.db.models.QuerySet。
     """
 
-    def search(self, query, user=None):  #search(self, query, user=None)：根據 query 搜尋產品標題或內容，並根據用戶（user）進一步過濾。
+    def search(self, query, user=None):  #search(self, query, user=None)：根據 query 搜尋產品標題或內容，並根據用戶user的pk進一步過濾。
         lookup = Q(title__icontains=query) | Q(content__icontains=query) #使用 Q 物件實現標題（title__icontains）和內容（content__icontains）的模糊搜尋。
         """
         什麼是「模糊搜尋」？
@@ -94,13 +94,15 @@ class Product(models.Model):  # pk
     繼承 models.Model 讓 Product 具備與資料庫交互的能力，例如儲存、查詢、更新資料。
     Django 會根據 Product 類的欄位（像 title、price）自動在資料庫中創建對應的表。
     """
-    user = models.ForeignKey(User, default=1, null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, default=1, null=True, on_delete=models.SET_NULL)  
+    # User 裡面有包含pk
+    #default=1是預設使用者pk
     """
     ForeignKey功能: 定義 Django 模型間的一對多關聯，將一個模型的記錄連接到另一個模型的單一記錄。
     一對多關係: 一個用戶 (User) 可以擁有多個產品 (Product)，但每個產品只屬於一個用戶。
     ForeignKey來源: Django 內建，來自 django.db.models.ForeignKey。
     ForeignKey 定義在 Product 模型，指向 User。資料庫裡，Product 表有個欄位存用戶的 ID，多個產品的這個欄位可以存同一個用戶 ID，但每個產品只有一個用戶 ID。
-    default=1：如果沒指定用戶，預設使用 ID 為 1 的用戶（必須確保資料庫中有 ID 為 1 的用戶，否則會報錯）。
+    default=1：如果創建Product時沒指定用戶，預設使用 ID 為 1 的用戶（必須確保資料庫中有 ID 為 1 的用戶，否則會報錯）(變成是ID為1的用戶的產品)。
     null=True：允許欄位在資料庫中為空（NULL），表示產品可以沒有關聯用戶。
     on_delete=models.SET_NULL：如果關聯的用戶被刪除，產品的 user 欄位會設為 NULL，而不是刪除產品。
 

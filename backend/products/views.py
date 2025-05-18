@@ -75,23 +75,15 @@ class ProductListCreateAPIView(
     雖然這個類別中沒有呼叫到 serializer_class
     但其實generics.ListCreateAPIView內部有用到serializer_class
     所以serializer_class是一個在繼承generics.ListCreateAPIView的類別內一定要出現的東西
-    或者是覆寫 get_serializer_class() 方法返回序列化器但不常見
+    或者是覆寫 get_serializer_class() 方法返回序列化器，但不常見
     """
-    """
-    A[rest_framework.serializers 模組] -->|提供| B[Serializer 基礎類]
-    B -->|繼承| C[serializers.ModelSerializer]
-    C -->|繼承| D[ProductSerializer]
-    D -->|實例化| E[serializer 物件]
-    """
-    """
-    A[HTTP 請求] -->|進入| B[視圖類]
-    B -->|使用| C[serializer_class]
-    C -->|實例化| D[ProductSerializer]
-    D -->|GET請求| E[序列化:模型→JSON]
-    D -->|POST請求| F[反序列化:JSON→模型]
-    """
+
     #serializer_class 的ProductSerializer裡面的rest_framework.serializers.ModelSerializer定義了模板，而 perform_create 中的 serializer 是使用這個模板創建的實際工具。
     def perform_create(self, serializer):
+        """
+        我的前端要有新增產品的功能，並在前端配置路由呼叫class ProductListCreateAPIView()才會觸發perform_create。
+        但我現在前端沒有寫上創建產品的功能，我從admin新增產品不會觸發這段perform_create的功能(若沒寫contnet，自動把title的值填進content)
+        """
         """
         perform_create(self, serializer) 是 Django REST Framework (DRF) 中用來自定義 POST 請求創建物件的邏輯，覆寫 generics.ListCreateAPIView 的預設行為。
         這段程式碼在創建 Product時因為繼承generics.ListCreateAPIView被觸發，確保新產品的 user 是當前登入用戶，並檢查 content 是否為空，若空則用 title 填補。serializer.save() 儲存最終資料。
@@ -174,9 +166,14 @@ class ProductDetailAPIView(
     UserQuerySetMixin, 
     StaffEditorPermissionMixin,
     generics.RetrieveAPIView):
+    """
+    功能: generics.RetrieveAPIView 是 Django REST Framework (DRF) 提供的通用視圖類，用於處理查詢單一物件的 GET 請求，返回其詳細資料。
+    來源: Django REST Framework，來自 rest_framework.generics。
+    白話解釋: 這是一個「查詢工具」，專門用來處理 API 的 GET 請求，查找某個特定物件 (如某個產品)，然後把它的資料轉成 JSON 回傳。
+    比如，訪問 /api/products/1/，它會返回 ID 為 1 的產品詳情。
+    """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    # lookup_field = 'pk' ??
 
 product_detail_view = ProductDetailAPIView.as_view()
 
@@ -185,10 +182,18 @@ class ProductUpdateAPIView(
     UserQuerySetMixin,
     StaffEditorPermissionMixin,
     generics.UpdateAPIView):
+    """
+    功能: generics.UpdateAPIView 是 Django REST Framework (DRF) 提供的通用視圖類，用於處理更新 (PUT/PATCH) 請求，更新現有模型實例。
+    來源: Django REST Framework，來自 rest_framework.generics。
+    白話解釋: 這是一個「更新工具」，專門用來處理 API 的更新請求。
+    比如，發一個 PUT 請求到 /api/products/1/，它會找到 ID 為 1 的產品，更新它的資料 (如 title, price)，然後返回更新後的結果。
+    """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
+    #這行沒用，只是標示一下
 
+    #目前前端沒寫這個功能不觸發
     def perform_update(self, serializer):
         instance = serializer.save()
         if not instance.content:
@@ -205,21 +210,13 @@ class ProductDestroyAPIView(
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
+    #這行沒用只是標示一下
 
     def perform_destroy(self, instance):
         # instance 
         super().perform_destroy(instance)
 
 product_destroy_view = ProductDestroyAPIView.as_view()
-
-# class ProductListAPIView(generics.ListAPIView):
-#     '''
-#     Not gonna use this method
-#     '''
-#     queryset = Product.objects.all()
-#     serializer_class = ProductSerializer
-
-# product_list_view = ProductListAPIView.as_view()
 
 
 class ProductMixinView(
