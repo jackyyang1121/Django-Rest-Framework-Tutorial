@@ -97,11 +97,6 @@ function handleSearch(event) {
     */ 
 
 
-
-/////////////////////////////讀到這裡////////////////////////////////////////////////////////////////
-
-
-
     const endpoint = `${baseEndpoint}/search/?${searchParams}`; // 搜尋 API 端點，包含查詢參數
     const headers = {
         "Content-Type": "application/json", // 指定請求內容類型為 JSON
