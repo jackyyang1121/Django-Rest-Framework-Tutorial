@@ -1,5 +1,5 @@
-from rest_framework import generics
-from rest_framework.response import Response
+from rest_framework import generics   
+from rest_framework.response import Response   
 
 from products.models import Product
 from products.serializers import ProductSerializer
@@ -9,7 +9,8 @@ from . import client
 class SearchListView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         user = None
-        if request.user.is_authenticated:     #確認用戶已登入，is_authenticated來自request.user的功能，request.user是django.contrib.auth.middleware.AuthenticationMiddleware 中介層自動附加到每個 HttpRequest 物件的。
+        if request.user.is_authenticated:     
+           #確認用戶已登入，is_authenticated來自request.user的功能，request.user是django.contrib.auth.middleware.AuthenticationMiddleware 中介層自動附加到每個 HttpRequest 物件的。
             #settings.py 中有MIDDLEWARE 設定
             #MIDDLEWARE = [
             #     ...

@@ -110,20 +110,11 @@ function handleLogin(event) {
 }
 
 
-
-/////////////////////////讀到這裡，完整走完handleLogin流程了//////////////////////////
-
-
-
-
-
-
-
 // 處理搜尋表單提交
 function handleSearch(event) {
     event.preventDefault(); // 阻止表單的默認提交行為
     let formData = new FormData(searchForm); // 收集表單數據（搜尋查詢）
-    let data = Object.fromEntries(formData); // 將表單數據轉換為對象格式
+    let data = Object.fromEntries(formData); // 將表單數據轉換為物件
     let searchParams = new URLSearchParams(data); // 將對象轉換為 URL 查詢參數
     //URLSearchParams(data) 會把資料轉成 key=value&key2=value2 這種網址查詢參數格式。
     /*
@@ -137,7 +128,7 @@ function handleSearch(event) {
     const headers = {
         "Content-Type": "application/json", // 指定請求內容類型為 JSON
     };
-    const authToken = localStorage.getItem('access'); // 從 localStorage 獲取 access token，登入後會有token
+    const authToken = localStorage.getItem('access'); // 從 localStorage 獲取 access token，登入後AuthData會存token到瀏覽器
     if (authToken) {
         headers['Authorization'] = `Bearer ${authToken}`; // 如果 token 存在，添加授權頭
     }
@@ -153,7 +144,7 @@ function handleSearch(event) {
         const validData = isTokenNotValid(data); // 檢查 token 是否有效
         if (validData && contentContainer) {   //要兩個條件同時成立
             contentContainer.innerHTML = ""; // 清空內容容器
-            if (data && data.hits) { // 如果回應包含搜尋結果
+            if (data && data.hits) { // 如果回應包含搜尋結果，data.hits是從algolia獲取的搜尋結果，hits 是 Algolia 搜索服务的内建功能
                 let htmlStr = "";
                 for (let result of data.hits) {
                     htmlStr += "<li>" + result.title + "</li>"; // 構建搜尋結果的 HTML 列表
@@ -236,7 +227,7 @@ function getFetchOptions(method, body) {
 
             /*
             Authorization": HTTP 請求標頭的名稱
-            Bearer: JWT 認證的標準前綴
+            Bearer: JWT 認證的標準前綴，在settings.py中設定
             localStorage.getItem('access'): 從瀏覽器儲存中獲取 access token
             access token在前端登入時handleAuthData()會儲存token在瀏覽器
             */

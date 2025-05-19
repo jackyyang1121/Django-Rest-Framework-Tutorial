@@ -7,6 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- 頁面標題，顯示在 ""瀏覽器標籤"" 上 -->
         <title>Login and Search with Algolia</title>
+        <!-- 有點像在import工具 -->
         <!-- 載入 Algolia InstantSearch.js 的 CSS 樣式表（重置主題）：用於清除預設樣式，確保一致的外觀 -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.3.1/themes/reset-min.css" integrity="sha256-t2ATOGCtAIZNnzER679jwcFcKYfLlw01gli6F6oszk8=" crossorigin="anonymous">
         <!-- 載入 Algolia InstantSearch.js 的 CSS 樣式表（Satellite 主題）：提供美觀的搜尋介面樣式 -->
@@ -36,25 +37,26 @@
             <!-- 提交按鈕，觸發搜尋請求 -->
         </form>
 
-        <!-- 內容容器：用於動態顯示搜尋結果或產品列表 -->
+        <!-- 內容容器：用於動態顯示搜尋結果或產品列表 ，對應到client.js的writeToContainer-->
         <div id="content-container"></div>
         <!-- 有用id這個參數都是為了讓js能夠抓到 -->
 
         <!-- Algolia InstantSearch.js 小部件容器 -->
-        <!-- 搜尋框容器：用於即時輸入搜尋查詢 -->
+        <!-- 搜尋框容器：用於即時輸入搜尋查詢，對應到client.js的handleSearch-->
         <div id="searchbox"></div>
-        <!-- 清除篩選條件按鈕容器：用於重置搜尋篩選條件 -->
+        <!-- 清除篩選條件按鈕容器：用於重置搜尋篩選條件，對應到client.js的handleClearRefinements-->
         <div id="clear-refinements"></div>
-        <!-- 用戶篩選列表容器：用於根據用戶屬性篩選搜尋結果 -->
+        <!-- 用戶篩選列表容器：用於根據用戶屬性篩選搜尋結果，對應到client.js的handleUserRefinement-->
         <div id="user-list"></div>
         <div>
             <h3>Public</h3>
-            <!-- 公開狀態篩選列表容器：用於根據公開屬性篩選搜尋結果 -->
+            <!-- 公開狀態篩選列表容器：用於根據公開屬性篩選搜尋結果，對應到client.js的handlePublicRefinement-->
             <div id="public-list"></div>
         </div>
-        <!-- 搜尋結果列表容器：用於顯示即時搜尋結果 -->
+        <!-- 搜尋結果列表容器：用於顯示即時搜尋結果，對應到client.js的handleHits-->
         <div id="hits"></div>
 
+        <!-- 有點像在import工具 -->
         <!-- 引入 AlgoliaSearch 客戶端：載入輕量級 JavaScript 庫，允許前端應用程式與 Algolia 搜尋 API 互動，執行搜尋、索引查詢等操作 -->
         <!-- Lite 版本：algoliasearch-lite 僅包含核心搜尋功能，適合前端使用，減少檔案大小，提升載入速度 -->
         <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.5.1/dist/algoliasearch-lite.umd.js" integrity="sha256-EXPXz4W6pQgfYY3yTpnDa3OH8/EPn16ciVsPQ/ypsjk=" crossorigin="anonymous"></script>

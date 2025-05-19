@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# 這個SECRET_KEY是Django內建的，用來加密session和csrf token
 SECRET_KEY = 'django-insecure-cn9t#dfjhxs%_cyenom8%qjkj=m^n(@0z85itbf+9f)o-d_13q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
 
-    # internal apps
+    # 自己創建的 apps
     'api',
     'articles',
     'products',
@@ -51,21 +51,21 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',#安全，目的是防止XSS攻擊
+    'django.contrib.sessions.middleware.SessionMiddleware',#保存用戶的會話信息
+    'corsheaders.middleware.CorsMiddleware',#允許跨域請求
+    'django.middleware.common.CommonMiddleware',#處理請求
+    'django.middleware.csrf.CsrfViewMiddleware',#防止CSRF攻擊
+    'django.contrib.auth.middleware.AuthenticationMiddleware',#處理用戶認證
+    'django.contrib.messages.middleware.MessageMiddleware',#處理訊息
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',#防止點擊劫持
 ]
 
-ROOT_URLCONF = 'cfehome.urls'
-CORS_URLS_REGEX = r"^/api/.*"
-CORS_ALLOWED_ORIGINS = []
+ROOT_URLCONF = 'cfehome.urls'  # 根URL配置，Django 內建，來自django.conf.settings
+CORS_URLS_REGEX = r"^/api/.*"  # 允許跨域的URL，CORS_URLS_REGEX來自 corsheaders 套件(有在INSTALLED_APPS裡載入)
+CORS_ALLOWED_ORIGINS = []  # 允許跨域的源
 
-if DEBUG:
+if DEBUG:     #如果DEBUG為True，則允許跨域的源，意思是在開發環境下用這個而不是上面那行。    DEBUG是Django內建的變數，用來判斷是否處於開發模式
     CORS_ALLOWED_ORIGINS += [
         'http://localhost:8111',
         'https://localhost:8111',
@@ -122,15 +122,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-us'  # 語言代碼
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'UTC'   
 
-USE_I18N = True
+USE_I18N = True  
 
-USE_L10N = True
+USE_L10N = True 
 
-USE_TZ = True
+USE_TZ = True  
 
 
 # Static files (CSS, JavaScript, Images)
@@ -145,12 +145,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-         "api.authentication.TokenAuthentication",
-         "rest_framework_simplejwt.authentication.JWTAuthentication",
+    "DEFAULT_AUTHENTICATION_CLASSES": [     #这些认证类会按顺序尝试认证，如果第一个认证失败，会尝试下一个认证
+        "rest_framework.authentication.SessionAuthentication",     #主要用于 Django 管理界面，不需要 token，使用浏览器的 session cookie
+         "api.authentication.TokenAuthentication",   #用于处理基于 token 的认证，需要提供 token 在请求头中
+         "rest_framework_simplejwt.authentication.JWTAuthentication",   #用于处理基于 JWT 的认证，需要提供 JWT token 在请求头中
     ],
-    "DEFAULT_PERMISSION_CLASSES": [
+    "DEFAULT_PERMISSION_CLASSES": [       
+        #未登录用户可以进行读取操作（GET 请求）
+        # 只有登录用户才能进行修改操作（POST, PUT, DELETE 等）
         "rest_framework.permissions.IsAuthenticatedOrReadOnly"
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
@@ -161,12 +163,12 @@ REST_FRAMEWORK = {
 ALGOLIA = {
     'APPLICATION_ID': 'H63LIZ0EO7',
     'API_KEY': '48da47d859e79e339efc931743ce9d48',
-    'INDEX_PREFIX': 'cfe'
+    'INDEX_PREFIX': 'cfe'   # 索引前綴，在algolia中建立索引時，會以這個前綴加上模型名稱來建立索引，結合Product模型在algolia的dashboard顯示cfe_Product
 }
 
 
 SIMPLE_JWT = {
-    "AUTH_HEADER_TYPES": ["Bearer"],
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=5),  # 改為 5 分鐘
-    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=1),    # 改為 1 天
+    "AUTH_HEADER_TYPES": ["Bearer"],   # 使用Bearer token
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=5),  # 改為 5 分鐘，每五分鐘自動換一次access token，自動索取新token，防止token被盜用
+    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=1),    # 改為 1 天，一天換一次refresh token，需要重新登入拿新的token
 }
