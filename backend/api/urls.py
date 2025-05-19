@@ -21,7 +21,6 @@ urlpatterns = [
     # 它會處理 HTTP 請求（像 POST）並調用類中的對應方法。
     # name='token_obtain_pair' 是給這個 URL 路徑取一個名字，方便在程式碼中引用這個路徑。
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('', views.api_home), # localhost:8000/api/
     # path('products/', include('products.urls'))
 ]

@@ -251,24 +251,6 @@ function isTokenNotValid(jsonData) {
     return true; // 返回 true 表示 token 有效
 }
 
-// 驗證 JWT token
-function validateJWTToken() {
-    const endpoint = `${baseEndpoint}/token/verify/`; // token 驗證 API 端點
-    const options = {
-        method: "POST", // 使用 POST 方法提交 token
-        headers: {
-            "Content-Type": "application/json" // 指定請求內容類型為 JSON
-        },
-        body: JSON.stringify({
-            token: localStorage.getItem('access') // 提交當前的 access token
-        })
-    };
-    fetch(endpoint, options) // 發送 POST 請求驗證 token
-    .then(response => response.json()) // 將回應轉換為 JSON 格式
-    .then(x => {
-        // 可在此處理 token 驗證結果，例如刷新 token
-    });
-}
 
 // 獲取產品列表
 function getProductList() {
@@ -299,9 +281,6 @@ writeToContainer 是「把資料（通常是 API 回傳的 JSON）顯示在網�
 */
 
 
-// 頁面加載時驗證 JWT token
-validateJWTToken();
-
 // 配置 Algolia InstantSearch.js
 const searchClient = algoliasearch('H63LIZ0EO7', '48da47d859e79e339efc931743ce9d48'); // 初始化 Algolia 客戶端，使用應用 ID 和 API 密鑰
 
@@ -311,7 +290,7 @@ const search = instantsearch({
 });
 
 // 添加 InstantSearch.js 小部件
-search.addWidgets([
+search.addWidgets([  //addWidgets() 是 InstantSearch.js 的一個方法，用於添加小部件到搜索界面。
     // 搜尋框小部件：提供即時搜尋輸入框
     instantsearch.widgets.searchBox({
         container: '#searchbox', // 指定搜尋框的容器

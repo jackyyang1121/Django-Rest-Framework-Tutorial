@@ -5,7 +5,7 @@ from django.db.models import Q   #可以用來實現複雜的查詢條件
  
 User = settings.AUTH_USER_MODEL # auth.User
 
-TAGS_MODEL_VALUES = ['electronics', 'cars', 'boats', 'movies', 'cameras']
+TAGS_MODEL_VALUES = ['electronics', 'cars', 'boats', 'movies', 'cameras']    #下方get_tags_list()會拿去用
 
 class ProductQuerySet(models.QuerySet):  
     #不是模型所以不用繼承models.Model
@@ -53,7 +53,7 @@ class ProductQuerySet(models.QuerySet):
         &：表示「與」（AND）。
         ~：表示「非」（NOT）。
         """
-        qs = self.is_public().filter(lookup) #先過濾剩公開產品（is_public()），再根據 lookup 模糊搜尋條件過濾。
+        qs = self.is_public().filter(lookup) #先過濾剩公開產品（is_public()是抓這個class自己的），再根據 lookup 模糊搜尋條件過濾。
         if user is not None:
             qs2 = self.filter(user=user).filter(lookup)  #如果提供了 user，也會查詢該用戶的產品（無論是否公開），然後用 | 合併結果，distinct() 去除重複。
             #主要就是讓搜尋結果也包含用戶自己的非公開產品

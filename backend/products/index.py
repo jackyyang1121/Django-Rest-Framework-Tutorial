@@ -25,4 +25,4 @@ class ProductIndex(AlgoliaIndex):
         'searchableAttributes': ['title', 'body'],  # 設定哪些欄位可以被搜尋，例如我打了price他不會給我搜尋結果，但是打了title內的內容他會給我搜尋結果
         'attributesForFaceting': ['user', 'public']  # 設定哪些欄位可以進行分類
     }
-    tags = 'get_tags_list'
+    tags = 'get_tags_list'  #在models.py裡面定義的get_tags_list，目前是以random的方式給tag
