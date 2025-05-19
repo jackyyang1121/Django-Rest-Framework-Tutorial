@@ -22,20 +22,6 @@ class SearchListView(generics.GenericAPIView):
         #因為我前端index.html搜尋表單內沒有添加name=tag和name=public這兩個參數，所以這邊的tag和public會是None，因為?${searchParams}沒辦法存取到這兩個參數
         if not query:
             return Response('', status=400)
-        results = client.perform_search(query, tags=tag, user=user, public=public)
+        results = client.perform_search(query, tags=tag, user=user, public=public)  #其實目前只有query有值，tag和public是None
         return Response(results) #回傳API的結果
 
-class SearchListOldView(generics.ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-    def get_queryset(self, *args, **kwargs):
-        qs = super().get_queryset(*args, **kwargs)
-        q = self.request.GET.get('q')
-        results = Product.objects.none()
-        if q is not None:
-            user = None
-            if self.request.user.is_authenticated:
-                user = self.request.user
-            results = qs.search(q, user=user)
-        return results
