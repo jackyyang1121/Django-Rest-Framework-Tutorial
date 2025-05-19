@@ -25,7 +25,7 @@ class ProductQuerySet(models.QuerySet):
     來源: Django 內建，來自 django.db.models.QuerySet。
     """
 
-    def search(self, query, user=None):  #search(self, query, user=None)：根據 query 搜尋產品標題或內容，並根據用戶user的pk進一步過濾。
+    def search(self, query, user=None):  #search(self, query, user=None)：根據 query(自定義變數) 搜尋產品標題或內容，並根據用戶user的pk進一步過濾。
         lookup = Q(title__icontains=query) | Q(content__icontains=query) #使用 Q 物件實現標題（title__icontains）和內容（content__icontains）的模糊搜尋。
         """
         什麼是「模糊搜尋」？
@@ -58,7 +58,13 @@ class ProductQuerySet(models.QuerySet):
             qs2 = self.filter(user=user).filter(lookup)  #如果提供了 user，也會查詢該用戶的產品（無論是否公開），然後用 | 合併結果，distinct() 去除重複。
             #主要就是讓搜尋結果也包含用戶自己的非公開產品
             qs = (qs | qs2).distinct() #去除重複的產品
-        return qs
+        return qs   #qs 是一個 QuerySet，包含符合條件的產品列表。
+        #qs例子:
+        #<QuerySet [
+        #   <Product: id=1, user="xxx", title="iPhone", content="xxx",price="xx.xx",public="True">,
+        #   <Product: id=2, user="yyy", title="Phone Case", ...>,
+        #   <Product: id=3, user="zzz", title="我的私人手機", user=你自己, ...>
+        # ]>
 
 
 class ProductManager(models.Manager):
@@ -81,6 +87,7 @@ class ProductManager(models.Manager):
 
     def search(self, query, user=None):
         return self.get_queryset().search(query, user=user)  
+    #返回一個 QuerySet，包含符合條件(所有公開且符合關鍵字的產品」加上「這個 user 自己的產品（不管公開或不公開，只要有符合關鍵字）」。)的產品列表。
         #self.ProductQuerySet(self.model, using=self._db).search(query, user=user)
 
 class Product(models.Model): 
@@ -150,8 +157,7 @@ class Product(models.Model):
     """
     objects = ProductManager()   # 設置一個實例，用於查詢產品數據（包含產品及用戶 ID）
     #ProductManager()內的return self.get_queryset().search(query, user=user)  
-    #可能返回一個 QuerySet，例如 [<Product: id=1>, <Product: id=2>]。
-    #每個 Product 實例有 id（產品 ID）和 user.id（用戶 ID）。
+    #objects拿到一個QuerySet，包含符合條件(所有公開且符合關鍵字的產品」加上「這個 user 自己的產品（不管公開或不公開，只要有符合關鍵字）」。)的產品列表。
 
 
     def get_absolute_url(self):
