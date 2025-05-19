@@ -179,12 +179,8 @@ class Product(models.Model):
     def is_public(self) -> bool:    
         return self.public # True or False
 
-    def get_tags_list(self):  
+    def get_tags_list(self):  #index.py裡面的tags有呼叫到
         return [random.choice(TAGS_MODEL_VALUES)]
-
-    @property  #讓這個方法可以像屬性一樣使用，不需要加括號，例如：product.sale_price，而不是 product.sale_price()。
-    def sale_price(self):
-        return "%.2f" %(float(self.price) * 0.8)
 
     def get_discount(self):   
         return "122"

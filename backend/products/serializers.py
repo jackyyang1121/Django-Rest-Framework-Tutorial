@@ -42,7 +42,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'title',
             'body',
             'price',
-            'sale_price',
             'public',
             'path',
             'endpoint',
