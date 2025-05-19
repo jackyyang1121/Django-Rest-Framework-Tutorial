@@ -6,7 +6,7 @@ import datetime
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent  # 這行會回傳一個 Path 物件，表示當前檔案的父目錄，也就是專案的根目錄
 
 
 # Quick-start development settings - unsuitable for production
@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'cfehome.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',  #BASE_DIR是從上面導入的，表示專案根目錄
     }
 }
 

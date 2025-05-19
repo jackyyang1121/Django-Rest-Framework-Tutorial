@@ -89,6 +89,8 @@ function handleLogin(event) {
             功能：指定 HTTP 請求的標頭（headers），像是元數據，告訴後端請求的格式或認證資訊。
             作用：這裡的 "Content-Type": "application/json" 表示請求的 body 是 JSON 格式，後端會知道怎麼解析。
             白話：這是快遞單上的「包裹說明」，告訴收件人「裡面裝的是 JSON 格式的東西」。
+            DRF 會自動根據 "Content-Type": "application/json" 幫你把資料轉成 Python 物件，讓我直接用 request.data 取得。
+            這就是前後端 JSON 溝通的標準做法。
 
             body：
             功能：包含請求的實際數據（例如 JSON 字串、FormData）。
@@ -120,7 +122,7 @@ function handleLogin(event) {
         fetch 會把這個回應包裝成一個 Response 物件，然後通過 Promise 傳給 .then(response => ...)，這就是 response 的來源。
     */
     })
-    .then(authData => {   //authData是自定義變數名稱，代表從後端獲取的認證數據，接住 response.json() 的結果=JSON格式的token
+    .then(authData => {   //authData是自定義變數名稱，代表從後端獲取的認證數據，接住 response.json() 的結果=JSON格式的token+(username+password鍵值對)
         handleAuthData(authData, getProductList); // 處理認證數據並調用回調函數獲取產品列表
     })
     .catch(err => {

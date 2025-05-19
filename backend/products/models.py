@@ -3,7 +3,7 @@ from django.conf import settings   #讓這邊可以訪問settings.py，進而得
 from django.db import models  
 from django.db.models import Q   #可以用來實現複雜的查詢條件
  
-User = settings.AUTH_USER_MODEL # auth.User
+User = settings.AUTH_USER_MODEL # 因為沒設定所以用Django預設模型auth.User，會自動填入使用者的pk
 
 TAGS_MODEL_VALUES = ['electronics', 'cars', 'boats', 'movies', 'cameras']    #下方get_tags_list()會拿去用
 
@@ -83,16 +83,16 @@ class ProductManager(models.Manager):
         return self.get_queryset().search(query, user=user)  
         #self.ProductQuerySet(self.model, using=self._db).search(query, user=user)
 
-class Product(models.Model):  # pk
+class Product(models.Model): 
     """
     在 Django 中，所有的模型（包括用戶模型）在繼承 models.Model 時為每個用戶（或任何模型實例）生成一個唯一的 id 欄位，作為主鍵（primary key）。
     這個 id 欄位是一個 AutoField，會自動遞增（從 1 開始）。每次創建新用戶時，Django 會為其分配一個唯一的 id（例如第一個用戶 id=1，第二個 id=2）。
     """
     """
-    models 是從 django.db 模組導入的
+    models 是從 django.db 模組導入的，db.sqlite3 是 Django 預設的資料庫檔案，啟動並執行遷移（migrate）時自動產生。
     models.Model 是 Django ORM 的基礎類，所有 Django 模型都要繼承它。
     繼承 models.Model 讓 Product 具備與資料庫交互的能力，例如儲存、查詢、更新資料。
-    Django 會根據 Product 類的欄位（像 title、price）自動在資料庫中創建對應的表。
+    Django 會根據 Product 類的欄位（user、title、content、price、public）自動在資料庫中創建對應的表。
     """
     user = models.ForeignKey(User, default=1, null=True, on_delete=models.SET_NULL)  
     # User 裡面有包含pk
@@ -104,12 +104,18 @@ class Product(models.Model):  # pk
     ForeignKey 定義在 Product 模型，指向 User。資料庫裡，Product 表有個欄位存用戶的 ID，多個產品的這個欄位可以存同一個用戶 ID，但每個產品只有一個用戶 ID。
     default=1：如果創建Product時沒指定用戶，預設使用 ID 為 1 的用戶（必須確保資料庫中有 ID 為 1 的用戶，否則會報錯）(變成是ID為1的用戶的產品)。
     null=True：允許欄位在資料庫中為空（NULL），表示產品可以沒有關聯用戶。
-    on_delete=models.SET_NULL：如果關聯的用戶被刪除，產品的 user 欄位會設為 NULL，而不是刪除產品。
+    on_delete=models.SET_NULL：如果關聯的用戶被刪除，產品的 user 欄位會設為 NULL，而不是刪除產品，SET_NULL來源於 Django 內建，來自 django.db.models.SET_NULL。
 
     User = settings.AUTH_USER_MODEL
     我的 settings.py 沒定義 AUTH_USER_MODEL，所以 Django 自動用內建的 auth.User 模型作為用戶模型。
     這個模型包含基本欄位 (如 username、password、email)。
     我在settings.py透過 django.contrib.auth (在 INSTALLED_APPS 中) 與這個預設模型互動，處理登入、權限等。
+    這個 User 模型有以下欄位:
+    主鍵 id（自動產生）
+    username
+    password
+    email
+    以及其他欄位（如 first_name、last_name、is_staff、is_active、date_joined 等）
     """
     title = models.CharField(max_length=120)
     """
