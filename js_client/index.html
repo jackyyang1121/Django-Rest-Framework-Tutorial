@@ -10,18 +10,18 @@
         <!-- 有點像在import工具 -->
         <!-- 載入 Algolia InstantSearch.js 的 CSS 樣式表（重置主題）：用於清除預設樣式，確保一致的外觀 -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.3.1/themes/reset-min.css" integrity="sha256-t2ATOGCtAIZNnzER679jwcFcKYfLlw01gli6F6oszk8=" crossorigin="anonymous">
-        {!-- 
+        <!-- 
             各瀏覽器（Chrome、Firefox、Edge…）對 HTML 標籤（如 <h1>、<ul>、<input> 等）有不同的預設邊距、字體、行高等。
             如果沒加 reset，網頁在不同瀏覽器上可能會有：
             不同的字體大小
             不同的間距或縮排
             列表點樣式不一
             表單元件外觀不統一 
-            沒有 reset，網頁在不同瀏覽器上可能會「長得不一樣」，甚至跑版。
-        --}
+            沒有 reset，網頁在不同瀏覽器上可能會「長得不一樣」，甚至跑版。 
+            -->
         <!-- 載入 Algolia InstantSearch.js 的 CSS 樣式表（Satellite 主題）：提供美觀的搜尋介面樣式 -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@7.4.5/themes/satellite-min.css" integrity="sha256-TehzF/2QvNKhGQrrNpoOb2Ck4iGZ1J/DI4pkd2oUsBc=" crossorigin="anonymous">
-        {!-- 
+        <!-- 
             這個 satellite 主題會讓以下元件變得更美觀：
             搜尋框（searchbox）：圓角、陰影、間距、字體等都會優化
             搜尋結果列表（hits）：每個結果的卡片、邊框、間距、hover 效果
@@ -29,8 +29,8 @@
             清除篩選條件按鈕（clear-refinements）：按鈕樣式、顏色
             分頁、排序、標題等所有 InstantSearch.js 內建元件
             
-            如果沒加這個主題，這些元件會長得很陽春、很像純 HTML，沒有現代感。加了 satellite 主題後，整個搜尋區塊會像專業網站一樣有設計感和一致性。
-        --}
+            如果沒加這個主題，這些元件會長得很陽春、很像純 HTML，沒有現代感。加了 satellite 主題後，整個搜尋區塊會像專業網站一樣有設計感和一致性。 
+        -->
     </head>
     <body>
         <!-- 登入表單：用於收集用戶的帳號和密碼，提交到後端 API 進行身份驗證 -->
@@ -53,7 +53,7 @@
             <!-- name="q" 是表單專用的屬性，用來標識表單數據的鍵名 -->
             <!-- 表單可能有很多輸入框（例如用戶名、密碼、搜尋詞），name 幫每個輸入框的數據取一個名字，讓後端或前端知道這是哪個數據 
              當我輸入「手機」並送出表單時，formData 會變成 { q: "手機" }-->
-             
+
              <!-- 後端已經寫好了，可以考慮加上public和tag這兩個參數 -->
             <input type="submit" value="search" />
             <!-- 提交按鈕，觸發搜尋請求 -->

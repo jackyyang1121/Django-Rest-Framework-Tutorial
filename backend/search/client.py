@@ -16,14 +16,11 @@ def perform_search(query, **kwargs):   #接受一個搜尋關鍵字（query）�
     query：必需參數，表示搜尋的關鍵字（例如 "hello"）。
     **kwargs：可選的關鍵字參數，允許傳入任意鍵值對（例如 tags=["electronics"], public=True, user="john"）。
     """
-    """
-    perform_search("hello", tags=["electronics"], public=True)
-    """
     index = get_index()    #Algolia搜尋引擎的index
     params = {}
     tags = ""
     if "tags" in kwargs:   
-        tags = kwargs.pop("tags") or [] #pop("tags") 從 kwargs 字典中把 tags 這個鍵值對拿出來，同時從字典中刪除它並取出其值。or []: 若 tags 是 None 或空，設為空列表 []。
+        tags = kwargs.pop("tags") or [] #pop("tags") 從 kwargs 字典中把 tags 這個鍵值對拿出來，同時從字典中刪除它並取出其值。or []: 若 tags 是 None 或空，設為空列表 []。目前是空的
         if len(tags) != 0:   #如果tags不是空，則把tags加入params
             params['tagFilters'] = tags
     index_filters = [f"{k}:{v}" for k,v in kwargs.items() if v]
@@ -31,7 +28,7 @@ def perform_search(query, **kwargs):   #接受一個搜尋關鍵字（query）�
     kwargs.items()：迭代 kwargs 中剩餘的鍵值對（例如 public=True, user="john"）。
     if v：過濾掉值為 False、None 或空的值（只保留「有意義」的條件）。
     f"{k}:{v}"：將每個鍵值對格式化為 key:value 字串（例如 public:True, user:john），Algolia 的過濾語法。
-    結果是一個列表，例如 ["public:True", "user:john"，"tags:electronics"]。
+    結果是一個列表，長 [user="xxx", public="True", tag = None, query="我打的字"]。
     """
     if len(index_filters) != 0:
          params['facetFilters'] = index_filters

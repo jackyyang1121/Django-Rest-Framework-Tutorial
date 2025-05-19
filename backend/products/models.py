@@ -160,7 +160,7 @@ class Product(models.Model):
     #objects拿到一個QuerySet，包含符合條件(所有公開且符合關鍵字的產品」加上「這個 user 自己的產品（不管公開或不公開，只要有符合關鍵字）」。)的產品列表。
 
 
-    def get_absolute_url(self):   #目前沒用到
+    def get_absolute_url(self):   #用在下面
         return f"/api/products/{self.pk}/"
 
     @property  #讓這個方法可以像屬性一樣使用，不需要加括號，例如：product.endpoint，而不是 product.endpoint()。
@@ -176,15 +176,15 @@ class Product(models.Model):
     def body(self):
         return self.content
 
-    def is_public(self) -> bool:
+    def is_public(self) -> bool:    
         return self.public # True or False
 
-    def get_tags_list(self):
+    def get_tags_list(self):  
         return [random.choice(TAGS_MODEL_VALUES)]
 
     @property  #讓這個方法可以像屬性一樣使用，不需要加括號，例如：product.sale_price，而不是 product.sale_price()。
     def sale_price(self):
         return "%.2f" %(float(self.price) * 0.8)
 
-    def get_discount(self):
+    def get_discount(self):   
         return "122"
