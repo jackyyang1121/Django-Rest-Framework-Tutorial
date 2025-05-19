@@ -37,7 +37,7 @@ class ProductSerializer(serializers.ModelSerializer):
     #Meta 像是序列化器的「設定檔」，告訴 DRF 這個序列化器要處理哪個模型 (Product)，以及要把哪些欄位轉成 JSON。欄位列表 (fields) 可以包含模型欄位和自定義欄位。
         model = Product
         fields = [
-            'owner',   #owner是使用者pk
+            'owner',   #owner是user的資料，包括id、username、password、email等
             'pk',     #pk是隱藏的，不會顯示在json裡，但會在url裡顯示，這邊是產品的pk
             'title',
             'body',
@@ -48,13 +48,16 @@ class ProductSerializer(serializers.ModelSerializer):
             'endpoint',
         ]
         """
-        Product 模型有：user, title, content, price, public。
-        對應 ProductSerializer 的 fields:
-        pk: 模型的隱式主鍵 (id)，自動包含。
-        title, price, public: 直接映射Product模型欄位。
+        fields: 定義要序列化的欄位列表。
+        
+        pk: 模型的隱式主鍵 (id)，產品id，自動包含，不用自己額外定義。
+        price, public: 直接映射Product模型欄位。
+        title: 透過 validators.validate_title_no_hello 和 validators.unique_product_title 驗證。
         body: 透過 serializers.CharField(source='content') 映射 content。
         owner: 透過 UserPublicSerializer 序列化 user 欄位。
-        path, endpoint,sale_price: 自定義欄位，不直接對應模型欄位。
+
+        path, endpoint,sale_price: 於models.py中下方定義，因為是用def在Product下方，
+        因此要用@property來標示讓他變屬性就像title、content等等，在這邊就可以拿來這樣使用
         """
 
     

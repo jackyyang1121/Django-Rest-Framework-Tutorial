@@ -231,7 +231,7 @@ function writeToContainer(data) {
 }
 
 // 獲取 fetch 請求選項
-function getFetchOptions(method, body) {
+function getFetchOptions(method, body) {  //method和body是自定義變數名稱，分別代表請求方法和請求主體
     return {
         method: method === null ? "GET" : method, // 如果未指定方法，默認為 GET
         headers: {
@@ -248,7 +248,7 @@ function getFetchOptions(method, body) {
 
             /*
             Authorization": HTTP 請求標頭的名稱
-            Bearer: JWT 認證的標準前綴，在settings.py中設定
+            Bearer: JWT 認證的標準前綴，在settings.py中SIMPLE_JWT設定好
             localStorage.getItem('access'): 從瀏覽器儲存中獲取 access token
             access token在前端登入時handleAuthData()會儲存token在瀏覽器
             */
@@ -262,7 +262,7 @@ function getFetchOptions(method, body) {
 }
 
 // 檢查 token 是否無效
-function isTokenNotValid(jsonData) {
+function isTokenNotValid(jsonData) {  // jsonData 是自定義變數名稱，代表從後端獲取的 JSON 數據，下面用的是data(isTokenNotValid(data))
     if (jsonData.code && jsonData.code === "token_not_valid") { // 如果jsonData.code 存在則略過，如果不在則執行
         //jsonData 是從getFetchOptions獲取的json格式的數據
         //token_not_valid 是 Django REST Framework 的 SimpleJWT 套件預定義的錯誤代碼
@@ -277,7 +277,7 @@ function isTokenNotValid(jsonData) {
 function getProductList() {
     const endpoint = `${baseEndpoint}/products/`; // 產品列表 API 端點
     const options = getFetchOptions(); // 使用預設 GET 方法和授權頭
-    fetch(endpoint, options) // 發送 GET 請求獲取產品列表
+    fetch(endpoint, options) // 發送 GET 請求獲取產品列表，API回傳JSON字串
     .then(response => {
         return response.json(); // 將回應轉換為 JSON 格式
     })
