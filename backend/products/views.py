@@ -69,6 +69,8 @@ class ProductListCreateAPIView(
     Product 是一個 Django 模型類，我在models.py自己定義的
     objects 是Product模型內的屬性，裡面包含所有搜尋結果。 
     .all()來源於Django 內建，來自 django.db.models.QuerySet(因為Product中的objects用到了class ProductQuerySet(models.QuerySet)，繼承了models.QuerySet)。
+    現在的 queryset 是一個查詢集 (QuerySet)，包含所有符合條件的產品資料。
+    QuerySet，包含符合條件(所有公開且符合關鍵字的產品」加上「這個 user 自己的產品（不管公開或不公開，只要有符合關鍵字）」。)的產品列表。
     """
     serializer_class = ProductSerializer
     """
