@@ -161,14 +161,14 @@ function handleSearch(event) {
         headers: headers // 請求頭，包含認證信息
     };
     fetch(endpoint, options) // 發送 GET 請求到後端 API
-    .then(response => {
+    .then(response => {  //response目前儲存的資料包含endpoint回傳的text、user和option內的資料，且資料形式是option內的headers和endpoint接收到的後端回傳資料是JSON字串
         return response.json(); // 將回應轉換為 JSON 格式
     })
     .then(data => {
         const validData = isTokenNotValid(data); // 檢查 token 是否有效
         if (validData && contentContainer) {   //要兩個條件同時成立
-            contentContainer.innerHTML = ""; // 清空內容容器
-            if (data && data.hits) { // 如果回應包含搜尋結果，data.hits是從algolia獲取的搜尋結果，hits 是 Algolia 搜索服务的内建功能
+            contentContainer.innerHTML = ""; // 清空內容容器，innerHTML 是 DOM 的一個屬性，用來獲取或設置元素的 HTML 內容，JavaScript內建的功能
+            if (data && data.hits) { // 如果回應包含搜尋結果，data.hits是從algolia獲取的搜尋結果，hits 是 Algolia 搜索服务的内建功能，用來獲取搜尋結果
                 let htmlStr = "";
                 for (let result of data.hits) {
                     htmlStr += "<li>" + result.title + "</li>"; // 構建搜尋結果的 HTML 列表

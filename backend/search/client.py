@@ -32,7 +32,7 @@ def perform_search(query, **kwargs):   #接受一個搜尋關鍵字（query）�
     """
     if len(index_filters) != 0:
          params['facetFilters'] = index_filters
-    print(params)  #包含tags和public、user所有條件
+    print(params)  #包含tags和public、user、query所有條件
     results = index.search(query, params)  #index.search(query, params) 是 Algolia 的 API 方法，用於執行搜尋操作。
-    #.search 就像按下「搜尋按鈕」，告訴 Algolia 用給定的關鍵字 (query) 和條件 (params) 去搜尋資料，然後把結果 (如符合的產品) 回傳給你。
+    #.search 就像按下「搜尋按鈕」，告訴 Algolia 用給定的關鍵字 (query) 和條件 (params) 去搜尋資料，然後把結果 (如符合的產品) 回傳給我。
     return results
