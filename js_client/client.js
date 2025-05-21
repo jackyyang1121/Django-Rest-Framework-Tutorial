@@ -137,11 +137,14 @@ function handleSearch(event) {
     let formData = new FormData(searchForm); // 收集表單數據（搜尋查詢）(text)
     let data = Object.fromEntries(formData); // 將表單數據轉換為物件
     let searchParams = new URLSearchParams(data); // 將對象轉換為 URL 查詢參數
+    //searchParams 是從formData獲取的資料，儲存的資料長這樣:
+    //searchParams = {text: "xxx"}
     //URLSearchParams(data) 會把資料轉成 key=value&key2=value2 這種網址查詢參數格式。
     /*
     URLSearchParams 是 JavaScript 提供的一個內建物件（Web API），用於處理 URL 的查詢參數（Query String）。
     它提供了一個簡單且直觀的方式來解析、操作和生成 URL查詢參數，特別適用於處理表單數據、API 請求或動態 URL 構建。
     */ 
+    
 
 
     const endpoint = `${baseEndpoint}/search/?${searchParams}`; // 搜尋 API 端點，包含查詢參數
