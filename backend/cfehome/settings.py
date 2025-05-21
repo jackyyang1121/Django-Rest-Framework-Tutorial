@@ -141,8 +141,8 @@ STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'  #預設主鍵類型，Django 內建，對應到apps.py中的default_auto_field
+#白話:這行告訴 Django：「如果我建一個模型，沒特別說要用什麼主鍵，就自動用你設定的這個類型。」
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [     #这些认证类会按顺序尝试认证，如果第一个认证失败，会尝试下一个认证
